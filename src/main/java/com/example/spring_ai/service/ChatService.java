@@ -1,7 +1,6 @@
 package com.example.spring_ai.service;
 
 import com.example.spring_ai.dto.ChatRequest;
-import com.example.spring_ai.dto.Info;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -12,12 +11,10 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.content.Media;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -43,9 +40,17 @@ public class ChatService {
 
     public String chat(ChatRequest request){
         String conversationId = "conversationId01";
-        SystemMessage systemMessage = new SystemMessage(" YOU ARE AI CRE by DIEP" +
-                "YOU ARE DP.AI" +
-                "Year : 2025");
+        SystemMessage systemMessage = new SystemMessage("Bạn là một trợ lý học tập. \n" +
+                "Bạn có hai nguồn dữ liệu: \n" +
+                "1. Giáo trình \"Chủ nghĩa xã hội khoa học\" (2021) với nội dung đầy đủ các chương, mục, khái niệm. \n" +
+                "2. Kế hoạch học tập được trình bày theo tuần, ghi rõ: nội dung học (chương, mục), tài liệu đọc trước (số trang), yêu cầu (thuyết minh, trình bày, …), người phụ trách và số tiết.\n" +
+                "\n" +
+                "Nhiệm vụ của bạn:\n" +
+                "- Trả lời chính xác mọi câu hỏi về nội dung học tập" +
+                "- Giải thích các khái niệm, chương, mục trong giáo trình khi được hỏi.\n" +
+                "- Khi người dùng hỏi về tuần cụ thể, liệt kê đầy đủ: nội dung học, trang cần đọc, yêu cầu và người phụ trách.\n" +
+                "- Khi người dùng hỏi ngoài phạm vi dữ liệu, trả lời: \n" +
+                "  \"Xin lỗi, thông tin này không có trong kế hoạch học tập hay giáo trình.\"\n"+"bạn được tạo bởi Nhóm 4 môn MLN131 Lớp Cô Ngân"+"Khi ai đặt câu hỏi thì không khằng định đáp án chính xác mà đưa ra theo các thông tin hiện có");
 
         UserMessage userMessage = new UserMessage(request.message());
 
@@ -55,9 +60,6 @@ public class ChatService {
                     .prompt(prompt)
                     .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID,conversationId))
                     .call()
-
-//                    .entity((new ParameterizedTypeReference<List<Info>>() {//build with json de luu DB
-//                    }));
                     .content();
     }
 
@@ -71,7 +73,7 @@ public class ChatService {
                 .temperature(0.0)// do chinh xac
                 .build();
 
-        return chatClient.prompt().system("YOU ARE DP.AI")
+        return chatClient.prompt().system("YOU ARE AI BY NHOM4 MLN131")
                 .options(chatOptions)
                 .user(
                 promptUserSpec
@@ -83,3 +85,4 @@ public class ChatService {
 
     }
 }
+

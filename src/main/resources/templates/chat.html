@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Tư tưởng Hồ Chí Minh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary-color: #34a853;
+            --error-color: #ea4335;
+            --surface-color: #ffffff;
+            --background-start: #1a73e8;
+            --background-end: #a2d2ff;
+            --on-surface-color: #202124;
+            --on-surface-variant: #5f6368;
+            --shadow-color: rgba(60, 64, 67, 0.3);
+            --card-shadow: 0 1px 2px 0 rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .15);
+            --elevation-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --card-background: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            color: var(--on-surface-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none"/><circle cx="3" cy="3" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+            overflow: hidden; /* Prevent container from expanding */
+        }
+
+        .sidebar {
+            background: var(--card-background);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            height: calc(100vh - 48px);
+            position: sticky;
+            top: 24px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .sidebar-content {
+            color: var(--on-surface-variant);
+        }
+
+        .sidebar-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .guide-section {
+            margin-bottom: 24px;
+        }
+
+        .guide-section h3 {
+            color: var(--on-surface-color);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-section p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .guide-section ul {
+            list-style: none;
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        .guide-section li {
+            position: relative;
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .guide-section li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            color: var(--on-surface-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none"/><circle cx="3" cy="3" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+            overflow: hidden; /* Prevent container from expanding */
+        }
+
+        .sidebar {
+            background: var(--card-background);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            height: calc(100vh - 48px);
+            position: sticky;
+            top: 24px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .sidebar-content {
+            color: var(--on-surface-variant);
+        }
+
+        .sidebar-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .guide-section {
+            margin-bottom: 24px;
+        }
+
+        .guide-section h3 {
+            color: var(--on-surface-color);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-section p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .guide-section ul {
+            list-style: none;
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        .guide-section li {
+            position: relative;
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .guide-section li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0; /* Allow flex children to shrink */
+            overflow: hidden; /* Contain scrolling children */
+        }
+
+        .header {
+            background: var(--card-background);
+            border-radius: 28px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a73e8, #34a853, #fbbc04, #ea4335);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .header h2 {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--on-surface-variant);
+            position: relative;
+        }
+
+        .chat-container {
+            background: var(--card-background);
+            border-radius: 28px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            min-height: 0; /* Allow flex children to shrink */
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            margin: -16px;
+            margin-bottom: 24px;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        #chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chat-box::-webkit-scrollbar-thumb {
+            background: rgba(26,115,232,0.2);
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        #chat-box::-webkit-scrollbar-thumb:hover {
+            background: rgba(26,115,232,0.4);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .message {
+            max-width: 85%;
+            margin: 16px 0;
+            padding: 16px;
+            border-radius: 20px;
+            position: relative;
+            animation: messageSlide 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1557b0 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai {
+            background: white;
+            color: var(--on-surface-color);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .input-container {
+            position: relative;
+            background: var(--surface-color);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: var(--elevation-shadow);
+            margin-top: auto; /* Push to bottom */
+        }
+
+        .upload-section {
+            padding: 16px;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upload-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1557b0 100%);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(26,115,232,0.2);
+        }
+
+        .preview-container {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .preview-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .preview-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .preview-container::-webkit-scrollbar-thumb {
+            background: rgba(26,115,232,0.2);
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .preview-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(26,115,232,0.4);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .preview-container img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .preview-info {
+            margin-top: 8px;
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 24px;
+            border: none;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .primary-button {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: var(--primary-color);
+        }
+
+        .secondary-button:hover {
+            background: var(--primary-light);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            padding: 8px;
+            align-items: center;
+        }
+
+        #user-message {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 24px;
+            background: #f1f3f4;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 16px;
+            color: var(--on-surface-color);
+            transition: all 0.2s ease;
+        }
+
+        #user-message:focus {
+            outline: none;
+            background: #e8eaed;
+        }
+
+        #send-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1557b0 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 24px;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(26,115,232,0.2);
+        }
+
+        #send-btn:disabled {
+            background: #e8eaed;
+            color: #9aa0a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 16px;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e8eaed;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 16px;
+            color: var(--on-surface-variant);
+            font-style: italic;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                height: 100vh;
+                padding: 16px;
+                overflow: hidden;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                height: calc(100vh - 32px);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 12px;
+            }
+
+            .main-content {
+                height: calc(100vh - 24px);
+            }
+
+            .chat-container {
+                padding: 16px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <h2 class="sidebar-title">Hướng dẫn sử dụng</h2>
+
+                <div class="guide-section">
+                    <h3>
+                        <span class="material-icons">chat</span>
+                        Tính năng chat
+                    </h3>
+                    <p>Bot AI được thiết kế để trả lời các câu hỏi về môn Tư tưởng Hồ Chí Minh dựa trên:</p>
+                    <ul>
+                        <li>Giáo trình và tài liệu học tập (CNXHKH_2021)</li>
+                        <li>Kế hoạch học tập theo tuần</li>
+                        <li>Các khái niệm và chương mục trong giáo trình</li>
+                    </ul>
+                </div>
+
+
+                <div class="guide-section">
+                    <h3>
+                        <span class="material-icons">help_outline</span>
+                        Cách sử dụng
+                    </h3>
+                    <ul>
+                        <li>Nhập câu hỏi vào ô chat và nhấn Gửi</li>
+                        <li>Có thể tải ảnh lên để hỏi về nội dung ảnh</li>
+                        <li>Bot sẽ trả lời dựa trên dữ liệu có sẵn</li>
+                        <li>Nếu câu hỏi ngoài phạm vi, bot sẽ thông báo</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>
+                        <span class="material-icons">tips_and_updates</span>
+                        Lưu ý
+                    </h3>
+                    <ul>
+                        <li>Bot chỉ trả lời các câu hỏi liên quan đến môn học</li>
+                        <li>Thông tin được cung cấp dựa trên tài liệu hiện có</li>
+                        <li>Không đưa ra các khẳng định tuyệt đối</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>AI Assistant - Tư tưởng Hồ Chí Minh</h1>
+                <h2>Powered by Nhóm 4 MLN131</h2>
+            </header>
+
+            <section class="chat-container">
+                <div id="chat-box"></div>
+
+                <div class="input-container">
+                    <div class="upload-section">
+                        <label class="upload-button" for="image-upload">
+                            <span class="material-icons">add_photo_alternate</span>
+                            Tải ảnh lên
+                        </label>
+                        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                        <span id="file-name" style="color: var(--on-surface-variant); font-size: 14px;"></span>
+                    </div>
+
+                    <div class="preview-container" id="preview-container">
+                        <img id="preview-img" src="" alt="Preview">
+                        <div class="preview-info">
+                            <p id="file-info"></p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-button secondary-button" onclick="document.getElementById('image-upload').click()">
+                                <span class="material-icons">refresh</span>
+                                Đổi ảnh khác
+                            </button>
+                            <button class="action-button primary-button" id="delete-image">
+                                <span class="material-icons">delete</span>
+                                Xóa ảnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="text" id="user-message" placeholder="Nhập câu hỏi về Tư tưởng Hồ Chí Minh..." autofocus>
+                        <button id="send-btn">
+                            <span class="material-icons">send</span>
+                            Gửi
+                        </button>
+                    </div>
+
+                    <div class="loading-container" id="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typing-indicator">
+                    AI đang nhập...
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userMessage = document.getElementById('user-message');
+        const sendBtn = document.getElementById('send-btn');
+        const imageUpload = document.getElementById('image-upload');
+        const fileName = document.getElementById('file-name');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImg = document.getElementById('preview-img');
+        const fileInfo = document.getElementById('file-info');
+        const loading = document.getElementById('loading');
+        const deleteImageBtn = document.getElementById('delete-image');
+        const typingIndicator = document.getElementById('typing-indicator');
+        let currentImage = null;
+
+        // Disable send button when input is empty
+        userMessage.addEventListener('input', function() {
+            sendBtn.disabled = !this.value.trim();
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function resetImageUpload() {
+            previewContainer.style.display = 'none';
+            fileName.textContent = '';
+            previewImg.src = '';
+            fileInfo.textContent = '';
+            currentImage = null;
+            imageUpload.value = '';
+        }
+
+        function showLoading() {
+            loading.style.display = 'flex';
+            typingIndicator.style.display = 'block';
+            sendBtn.disabled = true;
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            typingIndicator.style.display = 'none';
+            sendBtn.disabled = false;
+        }
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                resetImageUpload();
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                showNotification('Vui lòng chọn file ảnh hợp lệ (jpg, png, gif)', 'error');
+                resetImageUpload();
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('Kích thước file quá lớn (tối đa 10MB)', 'error');
+                resetImageUpload();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+                fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            }
+            reader.readAsDataURL(file);
+
+            currentImage = file;
+            showLoading();
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Lỗi khi tải ảnh');
+                return response.text();
+            })
+            .then(result => {
+                hideLoading();
+                appendMessage(result, 'ai');
+            })
+            .catch(error => {
+                hideLoading();
+                resetImageUpload();
+                showNotification('Lỗi khi xử lý ảnh: ' + error.message, 'error');
+            });
+        });
+
+        deleteImageBtn.addEventListener('click', function() {
+            resetImageUpload();
+            showNotification('Đã xóa ảnh thành công', 'success');
+        });
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: '#34a853',
+                error: '#ea4335',
+                info: '#1a73e8'
+            };
+
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                background: white;
+                color: ${colors[type]};
+                border-left: 4px solid ${colors[type]};
+                border-radius: 4px;
+                box-shadow: var(--card-shadow);
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function appendMessage(text, sender, imageUrl = null) {
+            const div = document.createElement('div');
+            div.className = 'message ' + sender;
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.style.cssText = 'max-width: 200px; border-radius: 8px; margin-bottom: 8px;';
+                content.appendChild(img);
+            }
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = (sender === 'user' ? 'Bạn: ' : 'AI: ') + text;
+            content.appendChild(textSpan);
+
+            div.appendChild(content);
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        sendBtn.onclick = function() {
+            const message = userMessage.value.trim();
+            if (!message) return;
+
+            appendMessage(message, 'user', currentImage ? URL.createObjectURL(currentImage) : null);
+            userMessage.value = '';
+            showLoading();
+
+            if (currentImage) {
+                const formData = new FormData();
+                formData.append('file', currentImage);
+                formData.append('message', message);
+
+                fetch('/chat-with-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    hideLoading();
+                    appendMessage(data, 'ai');
+                })
+                .catch(() => {
+                    hideLoading();
+                    showNotification('Lỗi khi kết nối AI.', 'error');
+                });
+            } else {
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    hideLoading();
+                    appendMessage(data, 'ai');
+                })
+                .catch(() => {
+                    hideLoading();
+                    showNotification('Lỗi khi kết nối AI.', 'error');
+                });
+            }
+        };
+
+        userMessage.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!this.value.trim()) return;
+                sendBtn.click();
+            }
+        });
+
+        // Initial state
+        sendBtn.disabled = true;
+    </script>
+</body>
+</html>
